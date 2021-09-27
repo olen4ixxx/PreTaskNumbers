@@ -3,31 +3,39 @@
  * Copyright notice
  */
 
-package io.olen4ixxx.pretask.reader;
+package io.olen4ixxx.pretask.mapper;
 
 import io.olen4ixxx.pretask.entity.CustomNumber;
-import io.olen4ixxx.pretask.entity.CustomNumberFactory;
+import io.olen4ixxx.pretask.factory.CustomNumberFactory;
+import io.olen4ixxx.pretask.reader.CustomNumberFileReader;
+import io.olen4ixxx.pretask.validation.CustomNumberValidator;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StringToCustomNumber {
+public class StringToCustomNumberMapper {
     static Logger logger = LogManager.getLogger();
 
     public static List<CustomNumber> stringToNumbers()
-            throws IOException, NumberFormatException {
-        String firstNumberInString = CustomNumberFileReader.read().get(0);
-        String secondNumberInString = CustomNumberFileReader.read().get(1);
+            throws IOException, URISyntaxException {
+        CustomNumberFileReader reader = new CustomNumberFileReader();
 
-        Double firstCustomNumberValue = 0.0;
-        Double secondCustomNumberValue = 0.0;
+        List<String> numbersList = reader.read();
+
+        String firstNumberInString = numbersList.get(0);
+        String secondNumberInString = numbersList.get(1);
+
+        double firstCustomNumberValue = 0.0;
+        double secondCustomNumberValue = 0.0;
         try {
-            firstCustomNumberValue = Double.parseDouble(firstNumberInString);
-            secondCustomNumberValue = Double.parseDouble(secondNumberInString);
+            firstCustomNumberValue = CustomNumberValidator.parseNumeric(firstNumberInString);
+            secondCustomNumberValue = CustomNumberValidator.parseNumeric(secondNumberInString);
+            CustomNumberValidator.zeroDivision(secondNumberInString);
         } catch (NumberFormatException e) {
             logger.log(Level.ERROR, "please, check the numbers", e);
         }
@@ -42,10 +50,11 @@ public class StringToCustomNumber {
 //                logger.log(Level.ERROR, "please, check the numbers", e);
 //            }
 //        }
+        CustomNumberFactory factory = new CustomNumberFactory();
 
-        CustomNumber firstNumber = CustomNumberFactory
+        CustomNumber firstNumber = factory
                 .createCustomNumber(firstCustomNumberValue);
-        CustomNumber secondNumber = CustomNumberFactory
+        CustomNumber secondNumber = factory
                 .createCustomNumber(secondCustomNumberValue);
 
         List<CustomNumber> customNumbers = new ArrayList<>();

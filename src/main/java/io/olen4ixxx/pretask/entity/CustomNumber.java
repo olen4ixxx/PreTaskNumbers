@@ -8,10 +8,6 @@ package io.olen4ixxx.pretask.entity;
 public class CustomNumber {
     private Double value;
 
-    public CustomNumber() {
-//        this.value = 0;
-    }
-
     public CustomNumber(Double value) {
         this.value = value;
     }
